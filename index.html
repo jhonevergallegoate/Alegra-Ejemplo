@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Customer Health Score — Alegra</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0D1117;
+      color: #E6EDF3;
+      min-height: 100vh;
+      padding: 32px 24px 48px;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+    .header-left h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #E6EDF3;
+      letter-spacing: -0.3px;
+    }
+    .header-left p {
+      font-size: 13px;
+      color: #6E7681;
+      margin-top: 4px;
+    }
+    .badge {
+      background: #ECFDF5;
+      color: #059669;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid #D1FAE5;
+      white-space: nowrap;
+      margin-top: 4px;
+    }
+
+    /* ── KPI Cards ── */
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .kpi {
+      background: #161B22;
+      border-radius: 12px;
+      padding: 20px 20px 18px;
+      border: 1px solid #30363D;
+    }
+    .kpi-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #6E7681;
+      margin-bottom: 8px;
+    }
+    .kpi-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #E6EDF3;
+      line-height: 1;
+    }
+    .kpi-value.green { color: #059669; }
+    .kpi-sub {
+      font-size: 12px;
+      color: #6E7681;
+      margin-top: 6px;
+    }
+
+    /* ── Chart Card ── */
+    .card {
+      background: #161B22;
+      border-radius: 12px;
+      border: 1px solid #30363D;
+      padding: 28px 28px 24px;
+    }
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #E6EDF3;
+    }
+    .card-sub {
+      font-size: 12px;
+      color: #6E7681;
+      margin-top: 3px;
+    }
+    .legend {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #8B949E;
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .chart-wrap {
+      position: relative;
+      height: 360px;
+    }
+
+    /* ── Country pills below chart ── */
+    .countries {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+    .country-pill {
+      flex: 1;
+      min-width: 120px;
+      background: #0D1117;
+      border: 1px solid #30363D;
+      border-radius: 10px;
+      padding: 12px 16px;
+      text-align: center;
+    }
+    .country-name {
+      font-size: 11px;
+      color: #6E7681;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .country-logos {
+      font-size: 18px;
+      font-weight: 700;
+      color: #E6EDF3;
+      margin: 4px 0 2px;
+    }
+    .country-chs {
+      font-size: 12px;
+      color: #059669;
+      font-weight: 600;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      font-size: 11px;
+      color: #30363D;
+      margin-top: 36px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <h1>Customer Health Score</h1>
+      <p>Clientes Core activos y saludables &mdash; corte actual</p>
+    </div>
+    <span class="badge">Saludable</span>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpis">
+    <div class="kpi">
+      <div class="kpi-label">CHS Promedio</div>
+      <div class="kpi-value green">85.8</div>
+      <div class="kpi-sub">sobre 100 puntos</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Total Logos</div>
+      <div class="kpi-value">2,925</div>
+      <div class="kpi-sub">empresas activas</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Score Mínimo</div>
+      <div class="kpi-value">75</div>
+      <div class="kpi-sub">umbral saludable</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Score Máximo</div>
+      <div class="kpi-value">100</div>
+      <div class="kpi-sub">puntaje perfecto</div>
+    </div>
+  </div>
+
+  <!-- Main Chart -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Distribución del Customer Health Score</div>
+        <div class="card-sub">Cantidad de logos por puntaje CHS (75 &ndash; 100)</div>
+      </div>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#BFDBFE;"></div>
+          Aceptable (75–79)
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#6EE7B7;"></div>
+          Saludable (80–89)
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#059669;"></div>
+          Excelente (90–100)
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-wrap">
+      <canvas id="chsChart"></canvas>
+    </div>
+
+    <!-- Countries -->
+    <div class="countries">
+      <div class="country-pill">
+        <div class="country-name">Colombia</div>
+        <div class="country-logos">1,416</div>
+        <div class="country-chs">CHS 85.8</div>
+      </div>
+      <div class="country-pill">
+        <div class="country-name">Rep. Dominicana</div>
+        <div class="country-logos">814</div>
+        <div class="country-chs">CHS 86.0</div>
+      </div>
+      <div class="country-pill">
+        <div class="country-name">México</div>
+        <div class="country-logos">541</div>
+        <div class="country-chs">CHS 85.6</div>
+      </div>
+      <div class="country-pill">
+        <div class="country-name">Costa Rica</div>
+        <div class="country-logos">154</div>
+        <div class="country-chs">CHS 86.2</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">Fuente: bi_customer_experience.healthy_core_users &nbsp;&middot;&nbsp; Actualizado: 20 Mar 2026</div>
+
+  <script>
+    const labels = [75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100];
+    const data   = [46,42,67,204,148,80,109,107,204,205,206,183,308,116,124,141,254,57,34,75,25,2,37,148,1,2];
+
+    // Color zones
+    const colors = labels.map(score => {
+      if (score <= 79) return 'rgba(191,219,254,0.9)'; // blue-ish: aceptable
+      if (score <= 89) return 'rgba(110,231,183,0.9)'; // green: saludable
+      return 'rgba(5,150,105,0.9)';                     // dark green: excelente
+    });
+    const borders = labels.map(score => {
+      if (score <= 79) return '#93C5FD';
+      if (score <= 89) return '#34D399';
+      return '#047857';
+    });
+
+    const avg = 85.8;
+
+    const ctx = document.getElementById('chsChart').getContext('2d');
+
+    // Average annotation plugin
+    const avgLinePlugin = {
+      id: 'avgLine',
+      afterDraw(chart) {
+        const { ctx, chartArea, scales } = chart;
+        const x = scales.x.getPixelForValue(avg - labels[0]);
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(x, chartArea.top);
+        ctx.lineTo(x, chartArea.bottom);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#58A6FF';
+        ctx.setLineDash([5, 4]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        // Label
+        ctx.fillStyle = '#58A6FF';
+        ctx.font = '600 11px -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        const labelX = x + (x > chart.width - 90 ? -46 : 46);
+        ctx.fillRect(labelX - 24, chartArea.top + 6, 48, 20);
+        ctx.fillStyle = '#0D1117';
+        ctx.fillText('Prom 85.8', labelX, chartArea.top + 20);
+        ctx.restore();
+      }
+    };
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Logos',
+          data,
+          backgroundColor: colors,
+          borderColor: borders,
+          borderWidth: 1,
+          borderRadius: 4,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#1A1D23',
+            titleColor: '#F9FAFB',
+            bodyColor: '#D1D5DB',
+            padding: 10,
+            callbacks: {
+              title: items => `CHS: ${items[0].label}`,
+              label: item => ` ${item.raw.toLocaleString('es')} logos`
+            }
+          }
+        },
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Puntaje CHS',
+              color: '#6E7681',
+              font: { size: 12 }
+            },
+            grid: { display: false },
+            ticks: { color: '#8B949E', font: { size: 11 } }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'N.° de logos',
+              color: '#6E7681',
+              font: { size: 12 }
+            },
+            grid: { color: '#21262D' },
+            ticks: { color: '#8B949E', font: { size: 11 } },
+            beginAtZero: true
+          }
+        }
+      },
+      plugins: [avgLinePlugin]
+    });
+  </script>
+</body>
+</html>
