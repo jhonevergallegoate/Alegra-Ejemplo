@@ -1,0 +1,11 @@
+{
+  "name": "alegra-dashboard-ejemplo",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "jose": "^5.9.6"
+  }
+}

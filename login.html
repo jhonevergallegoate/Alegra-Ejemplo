@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Customer Health Score | Alegra</title>
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #00897B 0%, #26C6B0 40%, #4DD9C8 75%, #80E8DC 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 48px 44px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.15);
+      text-align: center;
+    }
+
+    .logo {
+      width: 130px;
+      margin: 0 auto 28px;
+      display: block;
+    }
+
+    h1 {
+      font-family: 'Lexend', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #18283F;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #64748B;
+      margin-bottom: 36px;
+      line-height: 1.5;
+    }
+
+    .btn-google {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      padding: 14px 20px;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 12px;
+      background: #fff;
+      color: #18283F;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .15s, border-color .15s, box-shadow .15s;
+    }
+
+    .btn-google:hover {
+      background: #F8FAFC;
+      border-color: #00D6BC;
+      box-shadow: 0 4px 16px rgba(0,214,188,.15);
+    }
+
+    .btn-google svg { flex-shrink: 0; }
+
+    .domain-badge {
+      margin-top: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #F0FEFA;
+      border: 1px solid #B2F0E8;
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 12px;
+      color: #007A6E;
+      font-weight: 500;
+    }
+
+    .error-msg {
+      margin-bottom: 20px;
+      padding: 10px 16px;
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      border-radius: 10px;
+      color: #DC2626;
+      font-size: 13px;
+    }
+
+    .footer-text {
+      margin-top: 32px;
+      font-size: 11px;
+      color: #94A3B8;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img src="/logo.png" alt="Alegra" class="logo"/>
+
+    <h1>Customer Health Score</h1>
+    <p class="subtitle">Acceso restringido al equipo Alegra.<br/>Inicia sesión con tu cuenta corporativa.</p>
+
+    <div id="error-box" style="display:none" class="error-msg"></div>
+
+    <div id="spinner" style="display:flex;align-items:center;justify-content:center;height:52px;color:#94A3B8;font-size:13px;gap:8px;">
+      <svg id="spin-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/>
+      </svg>
+      Verificando sesión...
+    </div>
+
+    <a id="btn-google" class="btn-google" href="/api/auth/login" style="display:none">
+      <svg width="20" height="20" viewBox="0 0 48 48">
+        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+      </svg>
+      Iniciar sesión con Google
+    </a>
+
+    <div class="domain-badge">
+      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+      </svg>
+      Solo cuentas @alegra.com
+    </div>
+
+    <p class="footer-text">Customer Health Score &middot; Alegra</p>
+  </div>
+
+  <style>
+    @keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
+    #spin-icon { animation: spin 1s linear infinite; }
+  </style>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const err = params.get('error');
+    const msgs = {
+      domain_not_allowed: 'Acceso denegado. Solo se permiten cuentas @alegra.com.',
+      oauth_denied:       'Autenticación cancelada. Intenta de nuevo.',
+      token_failed:       'Error al obtener el token. Intenta de nuevo.',
+    };
+    if (err && msgs[err]) {
+      const box = document.getElementById('error-box');
+      box.textContent = msgs[err];
+      box.style.display = 'block';
+    }
+
+    (function() {
+      const btn     = document.getElementById('btn-google');
+      const spinner = document.getElementById('spinner');
+      let done      = false;
+      const isEmbedded = window !== window.parent;
+
+      function showButton() {
+        spinner.style.display = 'none';
+        btn.style.display = 'flex';
+      }
+
+      const stored = localStorage.getItem('google-profile');
+      if (stored) {
+        fetch('/api/auth/embed', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ profile: stored }),
+        }).then(function(res) {
+          if (res.ok) {
+            done = true;
+            window.location.replace('/');
+          } else {
+            if (!isEmbedded) showButton();
+          }
+        }).catch(function() {
+          if (!isEmbedded) showButton();
+        });
+        return;
+      }
+
+      const handler = async function(event) {
+        if (done) return;
+        const data = (function() {
+          try { return typeof event.data === 'string' ? JSON.parse(event.data) : event.data; }
+          catch { return null; }
+        })();
+        if (!data || data.type !== 'AUTH_PROFILE') return;
+        localStorage.setItem('google-profile', data.profile);
+        const res = await fetch('/api/auth/embed', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ profile: data.profile }),
+        }).catch(function() { return null; });
+        if (res && res.ok) {
+          done = true;
+          window.location.replace('/');
+        } else if (!isEmbedded) {
+          showButton();
+        }
+      };
+
+      window.addEventListener('message', handler);
+
+      if (isEmbedded) {
+        window.parent.postMessage({ type: 'READY' }, '*');
+      } else {
+        setTimeout(function() { if (!done) showButton(); }, 700);
+      }
+    })();
+  </script>
+</body>
+</html>

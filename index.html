@@ -172,6 +172,15 @@
 </head>
 <body>
 
+  <!-- Topbar de usuario -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding:10px 16px;background:#161B22;border:1px solid #30363D;border-radius:10px;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <img id="user-avatar" src="" alt="" width="28" height="28" style="border-radius:50%;display:none;"/>
+      <span id="user-name" style="font-size:13px;color:#8B949E;"></span>
+    </div>
+    <a href="/api/auth/logout" style="font-size:12px;color:#6E7681;text-decoration:none;padding:4px 10px;border:1px solid #30363D;border-radius:6px;">Cerrar sesión</a>
+  </div>
+
   <!-- Header -->
   <div class="header">
     <div class="header-left">
@@ -180,6 +189,14 @@
     </div>
     <span class="badge">Saludable</span>
   </div>
+
+  <script>
+    fetch('/api/auth/me').then(r => r.ok ? r.json() : null).then(u => {
+      if (!u) return;
+      if (u.picture) { const av = document.getElementById('user-avatar'); av.src = u.picture; av.style.display = 'block'; }
+      document.getElementById('user-name').textContent = u.name || u.email;
+    });
+  </script>
 
   <!-- KPIs -->
   <div class="kpis">
